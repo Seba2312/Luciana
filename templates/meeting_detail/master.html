@@ -1,0 +1,43 @@
+{# templates/meeting_detail/wrapper.html #}
+{% extends "base.html" %}
+{% block title %}{{ m.title }}{% endblock %}
+
+{% block content %}
+<section class="max-w-5xl mx-auto px-4 py-10 space-y-8">
+
+  {% include "meeting_detail/header.html" %}
+  {% include "meeting_detail/meta.html" %}
+
+  <div class="bg-info/10 border-l-4 border-info p-4 rounded shadow text-sm space-y-2">
+    <p>
+      Use the attendance buttons below to indicate whether you will join live, participate online or not attend.
+      The location and online link cards let you update the meeting place or open and copy the virtual meeting URL.
+      In the topics section you can add new points, edit existing ones and vote on them. Chair users can also generate a draft schedule or delete the meeting entirely.
+    </p>
+    <a href="{{ url_for('help_page', page=request.endpoint) }}" class="underline text-primary hover:text-primaryHover">Full help</a>
+  </div>
+
+  <div class="grid md:grid-cols-2 gap-6">
+    {% include "meeting_detail/location.html" %}
+    {% include "meeting_detail/online_link.html" %}
+  </div>
+
+  {% include "meeting_detail/attendance.html" %}
+  {% include "meeting_detail/topics.html" %}
+  {% include "meeting_detail/draft_schedule.html" %}
+
+</section>
+
+{% if (me_uid == m.created_by) or (me.is_chair) %}
+<script>
+  document.getElementById('delete-meeting').onclick = async () => {
+    if (!confirm('Really delete this meeting (including all topics)?')) return;
+    const resp = await fetch('{{ url_for("meet_bp.api_delete_mid", mid=m.id) }}',
+      {method: 'POST', headers: {'Content-Type': 'application/json'}});
+    if (resp.ok) window.location = '/home';
+    else alert('Could not delete meeting.');
+  };
+</script>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,65 @@
+{# past_meeting_detail/topics.html #}
+<div class="bg-surface rounded shadow p-5">
+    <p class="font-medium mb-4">Topics</p>
+
+    {% for t in topics %}
+    <details class="mb-3 rounded border border-neutral bg-background">
+        <summary class="px-4 py-2 flex justify-between items-center">
+            <span>{{ t.title }}</span>
+            <span class="text-xs text-textSecondary">{{ t.score }} votes</span>
+        </summary>
+
+        <div class="px-4 py-3 border-t border-neutral whitespace-pre-wrap">
+            {{ t.body_md }}
+        </div>
+
+        <div class="px-4 py-3 border-t border-neutral space-y-3 text-sm">
+
+            <div class="flex items-center gap-4">
+                <label class="flex items-center gap-1">
+                    <input type="radio" name="status-{{ t.id }}" value="resolved"
+                           {% if t.status== 'resolved' %}checked{% endif %}>
+                    <span>resolved</span>
+                </label>
+                <label class="flex items-center gap-1">
+                    <input type="radio" name="status-{{ t.id }}" value="open"
+                           {% if t.status !='resolved' %}checked{% endif %}>
+                    <span>unresolved</span>
+                </label>
+            </div>
+
+            <textarea id="upd-{{ t.id }}"
+                      class="w-full border border-neutral rounded p-2 h-24 bg-background
+                       text-textPrimary"
+                      placeholder="What was decided / action items …">{{ t.summary or '' }}</textarea>
+
+            <button class="px-3 py-1 bg-primary hover:bg-primaryHover text-surface rounded"
+                    onclick="saveUpdate('{{ t.id }}')">
+                Save update
+            </button>
+        </div>
+    </details>
+    {% endfor %}
+
+    {% if not topics %}
+    <p class="text-textSecondary">No topics recorded.</p>
+    {% endif %}
+
+    <script>
+        const MID = "{{ m.id }}";
+
+        async function saveUpdate(tid) {
+            const summary =
+                document.getElementById(`upd-${tid}`).value.trim();
+            const status =
+                document.querySelector(`input[name="status-${tid}"]:checked`).value;
+
+            await fetch(`/meeting/${MID}/api/topic_update`, {
+                method: "PATCH",
+                headers: {"Content-Type": "application/json"},
+                body: JSON.stringify({tid, summary, status})
+            });
+            location.reload();
+        }
+    </script>
+</div>

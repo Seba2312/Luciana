@@ -1,0 +1,117 @@
+<div class="bg-surface rounded shadow p-5">
+    <div class="flex items-center justify-between mb-4">
+        <p class="font-medium">Topics</p>
+        <button onclick="openTopicDlg()"
+                class="px-3 py-1 rounded bg-primary hover:bg-primaryHover text-surface text-sm shadow">
+            + Add topic
+        </button>
+    </div>
+
+    {% for t in topics %}
+    <details class="mb-3 rounded border border-neutral">
+        <summary class="px-4 py-2 cursor-pointer flex justify-between items-center">
+            <span>{{ t.title }}</span>
+            <span class="text-xs text-textSecondary">{{ t.score }} votes</span>
+        </summary>
+
+        <div id="body-{{ t.id }}"
+             class="px-4 py-3 border-t border-neutral bg-background whitespace-pre-wrap">
+            {{ t.body_md }}
+        </div>
+
+        <button onclick="startEdit('{{ t.id }}')"
+                class="ml-auto px-2 text-primary hover:opacity-80">✎ edit
+        </button>
+
+        <div class="flex gap-2 px-4 py-2 border-t border-neutral text-sm">
+            <button onclick="vote('{{ t.id }}', {{ 1 if t.user_vote!=1 else 0 }})"
+                    class="text-success {{ 'opacity-40 cursor-default' if t.user_vote==1 }}">
+                ▲ up-vote
+            </button>
+            <button onclick="vote('{{ t.id }}', {{ -1 if t.user_vote!=-1 else 0 }})"
+                    class="text-danger {{ 'opacity-40 cursor-default' if t.user_vote==-1 }}">
+                ▼ down
+            </button>
+        </div>
+    </details>
+    {% endfor %}
+    {% if not topics %}
+    <p class="text-textSecondary">No topics yet.</p>
+    {% endif %}
+</div>
+
+<!-- modal -------------------------------------------------------------- -->
+<div id="topicDlg"
+     class="fixed inset-0 bg-black/40 hidden flex items-center justify-center">
+    <div class="bg-surface p-6 rounded w-full max-w-md shadow space-y-4">
+        <h2 class="text-lg font-semibold">New topic</h2>
+
+        <input id="topTitle"
+               class="w-full border border-neutral rounded px-3 py-2 bg-background"
+               placeholder="Title">
+
+        <textarea id="topBody"
+                  class="w-full border border-neutral rounded px-3 py-2 h-32 bg-background"
+                  placeholder="Details / text"></textarea>
+
+        <div class="flex justify-end gap-3 pt-2">
+            <button class="border border-neutral px-4 py-2 rounded bg-surface/20 hover:bg-surface/40"
+                    onclick="closeTopicDlg()">Cancel
+            </button>
+            <button class="bg-primary hover:bg-primaryHover text-surface px-4 py-2 rounded"
+                    onclick="saveTopic()">Save
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    function openTopicDlg() {
+        topicDlg.classList.remove("hidden");
+    }
+
+    function closeTopicDlg() {
+        topicDlg.classList.add("hidden");
+    }
+
+    async function saveTopic() {
+        const title = topTitle.value.trim(), body = topBody.value.trim();
+        if (!title || !body) return alert("Fill in both fields");
+        await fetch(`/meeting/${MEETING_ID}/api/topic`, {
+            method: "POST", headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({title, body})
+        });
+        location.reload();
+    }
+
+    async function vote(id, delta) {
+        await fetch(`/meeting/${MEETING_ID}/api/topic`, {
+            method: "PATCH", headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({tid: id, delta})
+        });
+        location.reload();
+    }
+
+    function startEdit(id) {
+        const box = document.getElementById(`body-${id}`), old = box.textContent.trim();
+        box.innerHTML = `<textarea id="editTa-${id}" class="w-full border rounded p-2 h-32 mb-2">${old}</textarea>
+  <div class="flex gap-2">
+    <button class="border px-3 py-1 rounded text-sm" onclick="cancelEdit('${id}','${old.replace(/'/g, '&#39;')}')">Cancel</button>
+    <button class="bg-primary text-white px-3 py-1 rounded text-sm" onclick="saveEdit('${id}')">Save</button>
+  </div>`;
+    }
+
+    function cancelEdit(id, txt) {
+        document.getElementById(`body-${id}`).textContent = txt;
+    }
+
+    async function saveEdit(id) {
+        const val = document.getElementById(`editTa-${id}`).value.trim();
+        if (!val) return alert("Text empty");
+        await fetch(`/meeting/${MEETING_ID}/api/topic`, {
+            method: "PATCH", headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({tid: id, update: {body_md: val}})
+        });
+        location.reload();
+    }
+</script>

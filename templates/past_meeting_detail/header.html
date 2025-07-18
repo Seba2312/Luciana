@@ -1,0 +1,15 @@
+{# expects “m” in context #}
+{% set badge = {
+"online"  : "bg-online",
+"praesenz": "bg-presence",
+"hybrid"  : "bg-hybrid"
+}[m.mode] %}
+
+<div class="flex items-center gap-3">
+  <span class="{{ badge }} text-surface px-3 py-1 rounded-full text-sm">
+    {{ m.mode|capitalize }}
+  </span>
+
+    <h1 class="text-2xl font-semibold">{{ m.title }}</h1>
+    <p class="text-textSecondary text-sm">{{ m.start_human }}</p>
+</div>

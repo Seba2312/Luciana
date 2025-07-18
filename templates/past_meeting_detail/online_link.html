@@ -1,0 +1,48 @@
+{% if m.mode != 'praesenz' %}
+<section class="bg-surface rounded-xl shadow p-6 flex items-center space-x-4">
+
+    <svg class="h-8 w-8 text-success shrink-0" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17 10.5v-3a.5.5 0 0 0-.5-.5H6.5a.5.5 0 0 0-.5.5v7c0 .28.22.5.5.5h10a.5.5 0 0 0 .5-.5v-3l4 4v-11l-4 4z"/>
+    </svg>
+
+    <div class="flex-1 min-w-0">
+        <p class="text-sm text-textSecondary mb-1">Meeting link</p>
+        <a href="{{ m.online_link }}" target="_blank"
+           class="block text-info hover:text-infoHover text-lg font-semibold truncate hover:underline"
+           title="{{ m.online_link }}">{{ m.online_link }}</a>
+    </div>
+
+    <div class="flex gap-2">
+        <button onclick="window.open('{{ m.online_link }}','_blank')"
+                class="flex items-center bg-primary hover:bg-primaryHover text-surface px-4 py-2 rounded-lg shadow">
+            <svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14.5 12l-5.5 3.5V8.5L14.5 12zM5 3h14a2 2 0 012 2v14a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2z"/>
+            </svg>
+            Join
+        </button>
+
+        <button id="copyBtn"
+                class="flex items-center border border-neutral hover:bg-surface/20
+                   text-textPrimary px-3 py-2 rounded-lg">
+            <svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2
+                 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"/>
+            </svg>
+            Copy
+        </button>
+    </div>
+</section>
+
+<script>
+    document.getElementById("copyBtn").onclick = () => {
+        navigator.clipboard.writeText("{{ m.online_link }}")
+            .then(() => {
+                const b = document.getElementById("copyBtn");
+                b.innerText = "Copied!";
+                setTimeout(() => b.innerHTML =
+                    '<svg class="h-5 w-5 mr-1" fill="currentColor" viewBox="0 0 24 24"><path d="M16 1H4a2 2 0 00-2 2v14h2V3h12V1zm3 4H8a2 2 0 00-2 2v14a2 2 0 002 2h11a2 2 0 002-2V7a2 2 0 00-2-2zm0 16H8V7h11v14z"/></svg> Copy', 1500);
+            })
+            .catch(e => alert("Copy failed: " + e));
+    };
+</script>
+{% endif %}

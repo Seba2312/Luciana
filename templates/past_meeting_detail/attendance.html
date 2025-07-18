@@ -1,0 +1,27 @@
+<div class="bg-surface rounded shadow p-5">
+    <p class="font-medium mb-3">
+        Attendance ·
+        <span class="text-textSecondary">
+      {{ attends.live|length }} live / {{ attends.online|length }} online
+    </span>
+    </p>
+
+    <div class="grid md:grid-cols-3 gap-y-4 text-sm text-textPrimary">
+        {% if m.mode!='online' %}
+        <div>
+            <p class="font-medium mb-1">In person</p>
+            {{ attends.live_names|join(', ') or '—' }}
+        </div>
+        {% endif %}
+        {% if m.mode!='praesenz' %}
+        <div>
+            <p class="font-medium mb-1">Online</p>
+            {{ attends.online_names|join(', ') or '—' }}
+        </div>
+        {% endif %}
+        <div>
+            <p class="font-medium mb-1">Undecided</p>
+            {{ attends.undecided|join(', ') or '—' }}
+        </div>
+    </div>
+</div>

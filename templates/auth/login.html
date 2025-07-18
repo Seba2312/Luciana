@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+
+    <script defer src="{{ url_for('static', filename='js/tailwind_config.js') }}"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script>
+
+    <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+    />
+    <style>
+        html {
+            font-family: 'Inter', sans-serif;
+        }
+    </style>
+
+    <title>Luciana – Secure Sign‑In</title>
+</head>
+<body
+        class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-900 to-indigo-800 text-slate-100 flex flex-col"
+>
+<header class="w-full py-6 px-4 flex items-center justify-center sm:justify-between">
+    <h1 class="text-3xl font-bold tracking-tight select-none">Luciana</h1>
+    <nav class="hidden sm:flex space-x-8 text-sm">
+        <a
+                href="{{ url_for('privacy_page') }}"
+                class="hover:text-indigo-300 transition-colors"
+        >Privacy</a
+        >
+        <a
+                href="{{ url_for('terms_page') }}"
+                class="hover:text-indigo-300 transition-colors"
+        >Terms</a
+        >
+    </nav>
+</header>
+
+<main class="flex-grow w-full flex items-center justify-center px-4 text-center">
+    <div
+            class="backdrop-blur-md bg-white/5 border border-white/10 shadow-2xl rounded-2xl p-10 max-w-lg w-full"
+    >
+        <h2 class="text-4xl font-semibold mb-4">Welcome</h2>
+        <p class="mb-8 leading-relaxed text-slate-300">
+            Keep your apartment organised with shared meetings and member
+            management.
+        </p>
+
+        <ul class="mb-10 space-y-3 text-left max-w-md mx-auto text-slate-200">
+            <li class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-5 h-5 flex-shrink-0 text-indigo-400">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M3.75 21h16.5M4.5 3.75h15a.75.75 0 01.75.75v13.5a.75.75 0 01-.75.75h-15a.75.75 0 01-.75-.75V4.5a.75.75 0 01.75-.75z"/>
+                </svg>
+                <span>Schedule and track meetings</span>
+            </li>
+            <li class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-5 h-5 flex-shrink-0 text-indigo-400">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M16.5 7.5V6a3 3 0 00-3-3h-3a3 3 0 00-3 3v1.5m0 9V18a3 3 0 003 3h3a3 3 0 003-3v-1.5m-9 0h9"/>
+                </svg>
+                <span>Manage members</span>
+            </li>
+            <li class="flex items-start gap-3">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                     stroke="currentColor" class="w-5 h-5 flex-shrink-0 text-indigo-400">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6"/>
+                </svg>
+                <span>Sync events with Google&nbsp;Calendar</span>
+            </li>
+        </ul>
+
+        <button
+                id="google-btn"
+                class="w-full inline-flex items-center justify-center gap-3 py-3 px-4 rounded-lg bg-gradient-to-r from-indigo-500 to-indigo-600 hover:from-indigo-400 hover:to-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-400 transition"
+        >
+            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google icon"
+                 class="h-5 w-5"/>
+            <span class="font-medium">Continue with Google</span>
+        </button>
+
+        <p id="error" class="text-sm text-red-400 text-center mt-4 hidden"></p>
+    </div>
+</main>
+
+<section class="mt-[60vh] py-24 space-y-4 max-w-xl text-left mx-auto px-4">
+
+    <h3 class="text-2xl font-semibold text-center">Why do we use Google
+    Sign‑In?</h3>
+    <p>
+        Google Sign‑In verifies your identity and grants Luciana permission to
+        create and update events in your Google Calendar.
+    </p>
+    <p>
+        We only access your basic profile and calendar data for this purpose
+        and never share it with third parties. Read our
+        <a href="{{ url_for('privacy_page') }}" class="underline hover:text-indigo-300">Privacy Policy</a>
+        for more details.
+    </p>
+</section>
+
+<section class="py-24 space-y-4 max-w-xl text-left mx-auto px-4">
+    <h3 class="text-2xl font-semibold text-center">What is Luciana?</h3>
+    <p>
+        Luciana helps apartment owners and housing associations organise
+        meetings, share agendas and keep track of attendees in one place.
+    </p>
+    <p>
+        Anything you plan here is automatically synced to Google Calendar so
+        everyone stays informed.
+    </p>
+</section>
+
+<footer class="sm:hidden w-full text-center py-6 text-sm text-slate-300">
+    <a href="{{ url_for('privacy_page') }}" class="underline hover:text-indigo-300">Privacy</a>
+    <span class="mx-2">•</span>
+    <a href="{{ url_for('terms_page') }}" class="underline hover:text-indigo-300">Terms</a>
+</footer>
+
+<script type="module" defer src="{{ url_for('static', filename='js/auth/login.js') }}"></script>
+</body>
+</html>

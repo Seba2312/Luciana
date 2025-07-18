@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block title %}Privacy Policy{% endblock %}
+
+{% block content %}
+<section class="max-w-4xl mx-auto px-4 py-10 prose text-textPrimary">
+  <h1>Privacy Policy</h1>
+
+  <p>This application is a prototype developed as part of a university course. It uses Google APIs to access user profile and calendar data with the user's explicit consent via OAuth 2.0.</p>
+
+  <h2>1. Information We Access</h2>
+  <p>After you authorise the application, we access:</p>
+  <ul>
+    <li>Your Google basic profile information (name, email address, profile picture)</li>
+    <li>Your Google Calendar event data (titles, start and end times, descriptions)</li>
+  </ul>
+
+  <h2>2. How We Use Your Data</h2>
+  <p>Your data is processed exclusively to:</p>
+  <ul>
+    <li>Identify you within the application</li>
+    <li>Display, create and manage your calendar events to support meeting planning and scheduling</li>
+  </ul>
+
+  <h2>3. Usage Tracking</h2>
+  <p>To evaluate the usability of this prototype for course assessment, the application records anonymised click behaviour and navigation patterns. No personally identifiable data is linked to these records and the tracking results are never shared with third parties.</p>
+
+  <h2>4. Sharing and Disclosure</h2>
+  <p>Your Google user data and tracking data are <strong>not shared with any third parties</strong>. All processing remains strictly inside the application.</p>
+
+  <h2>5. Data Protection</h2>
+  <p>We protect your data through:</p>
+  <ul>
+    <li>HTTPS‑encrypted communication between your browser and our servers</li>
+    <li>The secure Google OAuth 2.0 authorisation flow</li>
+    <li>No long‑term storage of Google user data on our servers</li>
+  </ul>
+
+  <h2>6. Data Retention and Deletion</h2>
+  <ul>
+    <li><strong>Session storage.</strong> While you are signed in, calendar data is held only in encrypted server memory and is never persisted to disk.</li>
+    <li><strong>Temporary cache.</strong> Query results may be cached for performance for a maximum of 24 hours before automatic purge.</li>
+    <li><strong>User‑initiated deletion.</strong> You may delete your account at any time via the profile page. All personal and tracking data associated with your account is erased within 24 hours of the request.</li>
+    <li><strong>Automatic deletion.</strong> The project will be shut down in September 2025. All remaining personal and tracking data will be deleted irrevocably at that time, even if a user has not requested deletion earlier.</li>
+  </ul>
+
+  <h2>7. Your Consent</h2>
+  <p>By using this application and authenticating with your Google account, you consent to the collection and processing of data as described in this policy.</p>
+
+  <h2>8. Contact</h2>
+  <p>If you have questions about your data or this privacy policy, please write to us at <em>[your email/contact link]</em>.</p>
+</section>
+{% endblock %}

@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% block title %}New meeting{% endblock %}
+
+{% block content %}
+<section class="max-w-md mx-auto px-4 py-10">
+    <h1 class="text-2xl font-semibold mb-6">Create meeting</h1>
+
+    <form id="newForm" class="space-y-6 bg-surface p-6 rounded-xl shadow">
+        <input name="title"
+               class="w-full border border-neutral rounded px-3 py-2 bg-background"
+               placeholder="Title" required>
+
+        <input name="start_iso" type="datetime-local"
+               class="w-full border border-neutral rounded px-3 py-2
+              text-textPrimary bg-background scheme-auto"
+               required>
+
+
+        <select id="modeSelect" name="mode"
+                class="w-full border border-neutral rounded px-3 py-2 bg-background">
+            <option value="online">Online</option>
+            <option value="praesenz">In-person</option>
+            <option value="hybrid">Hybrid</option>
+        </select>
+
+        <div id="locationBlock" class="hidden space-y-3">
+            <label class="font-medium">Search address</label>
+            <input id="search_address"
+                   type="text"
+                   class="w-full border border-neutral rounded px-3 py-2 bg-background"
+                   placeholder="Street, city …">
+
+            <div id="map"
+                 class="w-full h-52 bg-neutralHover/20 rounded flex items-center justify-center text-neutral">
+                Google Maps
+            </div>
+
+            <input type="hidden" name="formatted_address" id="formatted_address">
+            <input type="hidden" name="latitude" id="latitude">
+            <input type="hidden" name="longitude" id="longitude">
+        </div>
+
+        <p id="meetInfo" class="hidden text-textSecondary">
+            Google Meet link will be generated automatically.
+        </p>
+
+        <button class="w-full bg-primary hover:bg-primaryHover text-surface py-2 rounded">
+            Save
+        </button>
+    </form>
+</section>
+
+<script src="{{ url_for('static', filename='js/meeting_new.js') }}"></script>
+
+
+<script>
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById("map"), {
+            center: {lat: 0, lng: 0}, zoom: 2
+        })
+        const input = document.getElementById("search_address")
+        const ac = new google.maps.places.Autocomplete(input, {
+            fields: ["address_components", "formatted_address", "geometry"]
+        })
+        let marker = null
+
+        ac.addListener('place_changed', () => {
+            const p = ac.getPlace();
+            if (!p.geometry) return
+            drop(p.geometry.location)
+            fill(p)
+        })
+
+        function drop(pos) {
+            if (!marker) {
+                marker = new google.maps.Marker({map, position: pos, draggable: true})
+                marker.addListener('dragend', e => {
+                    latitude.value = e.latLng.lat()
+                    longitude.value = e.latLng.lng()
+                })
+            } else marker.setPosition(pos)
+            map.setCenter(pos);
+            map.setZoom(15)
+        }
+
+        function fill(pl) {
+            formatted_address.value = pl.formatted_address
+            latitude.value = pl.geometry.location.lat()
+            longitude.value = pl.geometry.location.lng()
+        }
+    }
+</script>
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ MAPS_API_KEY }}&libraries=places&callback=initMap">
+</script>
+
+{% endblock %}

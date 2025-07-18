@@ -1,0 +1,34 @@
+{% if m.mode != 'online' %}
+<section class="bg-surface rounded shadow p-5 space-y-3">
+    <h2 class="text-xl font-semibold">Location</h2>
+
+    <p class="text-sm text-textSecondary">{{ m.formatted_address or '—' }}</p>
+
+    <div id="map"
+         class="w-full h-48 bg-neutralHover/20 rounded overflow-hidden"></div>
+</section>
+
+<script>
+    (function () {
+        const lat = {{ m.latitude|float|default('null') }},
+            lng = {{ m.longitude|float|default('null') }};
+        if (lat === null || lng === null) return;
+
+        window.initPastMap = () => {
+            const map = new google.maps.Map(
+                document.getElementById('map'),
+                {center: {lat, lng}, zoom: 15, disableDefaultUI: true}
+            );
+            new google.maps.Marker({
+                position: {lat, lng},
+                map,
+                icon: 'https://maps.google.com/mapfiles/ms/icons/red-dot.png'
+            });
+        };
+    })();
+</script>
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ MAPS_API_KEY }}&callback=initPastMap">
+</script>
+{% endif %}

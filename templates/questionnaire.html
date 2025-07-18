@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block title %}Questionnaire{% endblock %}
+
+{% block content %}
+<section class="max-w-xl mx-auto px-4 py-10 space-y-6">
+  <h1 class="text-2xl font-semibold text-center">Questionnaire</h1>
+
+  <div id="password-block" class="space-y-4 bg-surface p-6 rounded-xl shadow">
+    <label class="block font-medium">Enter password</label>
+    <input id="pwd-input" type="text" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+    <p id="pwd-error" class="text-danger text-sm"></p>
+    <button id="pwd-btn" class="w-full bg-primary hover:bg-primaryHover text-surface py-2 rounded">Submit</button>
+  </div>
+
+  <form id="qform" class="hidden space-y-4 bg-surface p-6 rounded-xl shadow">
+    <p class="text-sm text-neutral-600 italic mb-2">1 = bad, 5 = good</p>
+
+    <div>
+      <label class="block mb-1 font-medium">1. The home screen is clear and easy to navigate.</label>
+      <select name="q1" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+        {% for i in range(1,6) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">2. The home screen provides enough information for me to plan my activities effectively.</label>
+      <select name="q2" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+        {% for i in range(1,6) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">3. How visually appealing do you find the home screen?</label>
+      <select name="q3" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+        {% for i in range(1,6) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">4. How long did it take you to find the information you needed?</label>
+      <select name="q4" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+        <option value="<5">< 5 s</option>
+        <option value="5-10">5-10 s</option>
+        <option value=">10">> 10 s</option>
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">5. Which additional information would you like to be shown on the home screen?</label>
+      <textarea name="q5" class="w-full border border-neutral rounded px-3 py-2 bg-background" rows="3"></textarea>
+    </div>
+    {% if variant == 'A' %}
+    <div>
+      <label class="block mb-1 font-medium">6. Being able to customise which information blocks are shown improves my overall experience.</label>
+      <select name="q6" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+        {% for i in range(1,6) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+      </select>
+    </div>
+    <div>
+      <label class="block mb-1 font-medium">7. Customising the home screen was easy to do.</label>
+      <select name="q7" class="w-full border border-neutral rounded px-3 py-2 bg-background">
+        {% for i in range(1,6) %}<option value="{{ i }}">{{ i }}</option>{% endfor %}
+      </select>
+    </div>
+    {% endif %}
+    <button class="w-full bg-primary hover:bg-primaryHover text-surface py-2 rounded">Submit</button>
+  </form>
+
+  <div id="thanks" class="hidden text-center">
+    <p class="text-xl font-semibold mb-2">Thank you!</p>
+    <p>You may now close the website.</p>
+  </div>
+</section>
+<script defer src="{{ url_for('static', filename='js/questionnaire.js') }}"></script>
+{% endblock %}

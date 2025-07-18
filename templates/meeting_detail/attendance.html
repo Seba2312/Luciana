@@ -1,0 +1,69 @@
+<div class="bg-surface rounded shadow p-5">
+    <div class="flex items-center justify-between mb-4">
+        <p class="font-medium">
+            Attendance ·
+            <span class="text-textSecondary">
+        {{ attends.live|length }} live / {{ attends.online|length }} online
+      </span>
+        </p>
+
+        <div class="flex gap-2">
+            {% if m.mode!='online' %}
+            <button onclick="attend('live')"
+                    class="px-3 py-1 rounded border border-neutral
+                     {{ 'bg-success text-surface' if me_uid in attends.live
+                        else 'bg-surface text-textPrimary' }}">
+                In&nbsp;person
+            </button>
+            {% endif %}
+
+            {% if m.mode!='praesenz' %}
+            <button onclick="attend('online')"
+                    class="px-3 py-1 rounded border border-neutral
+                     {{ 'bg-success text-surface' if me_uid in attends.online
+                        else 'bg-surface text-textPrimary' }}">
+                Online
+            </button>
+            {% endif %}
+
+            <button onclick="attend('none')"
+                    class="px-3 py-1 rounded border border-neutral
+                     {{ 'bg-primary text-surface'
+                        if me_uid not in attends.live and me_uid not in attends.online
+                        else 'bg-surface text-textPrimary' }}">
+                Undecided
+            </button>
+        </div>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-y-4 text-sm text-textPrimary">
+        {% if m.mode!='online' %}
+        <div>
+            <p class="font-medium mb-1">In person</p>
+            {{ attends.live_names|join(', ') or '—' }}
+        </div>
+        {% endif %}
+        {% if m.mode!='praesenz' %}
+        <div>
+            <p class="font-medium mb-1">Online</p>
+            {{ attends.online_names|join(', ') or '—' }}
+        </div>
+        {% endif %}
+        <div>
+            <p class="font-medium mb-1">Undecided</p>
+            {{ attends.undecided|join(', ') or '—' }}
+        </div>
+    </div>
+</div>
+
+<script>
+    const MEETING_ID = "{{ m.id }}";
+
+    async function attend(where) {
+        await fetch(`/meeting/${MEETING_ID}/api/attend`, {
+            method: "POST", headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({where})
+        });
+        location.reload();
+    }
+</script>

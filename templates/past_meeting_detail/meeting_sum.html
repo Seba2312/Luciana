@@ -1,0 +1,39 @@
+<div class="bg-surface rounded shadow p-5">
+    <div class="flex items-center justify-between mb-3">
+        <p class="font-medium">Meeting summary</p>
+
+        <button id="sumBtn"
+                class="px-3 py-1 bg-primary hover:bg-primaryHover text-surface rounded"
+                onclick="generateSummary()">
+            {{ 'Regenerate' if m.ai_summary else 'Generate with AI' }}
+        </button>
+    </div>
+
+    <textarea id="sumBox"
+              class="w-full border border-neutral rounded p-3 h-40 resize-y
+                   bg-background text-textPrimary"
+              placeholder="(AI summary will appear here)"
+              readonly>{{ m.ai_summary }}</textarea>
+</div>
+
+<script>
+    let lastSumTs = 0;
+
+    async function generateSummary() {
+        const now = Date.now();
+        if (now - lastSumTs < 5000) return;
+        lastSumTs = now;
+
+        const btn = document.getElementById('sumBtn');
+        const box = document.getElementById('sumBox');
+        btn.textContent = 'Working…';
+        btn.disabled = true;
+
+        const res = await fetch(`/meeting/{{ m.id }}/api/generate_summary`,
+            {method: 'POST'});
+        const data = await res.json();
+        box.value = data.summary;
+        btn.textContent = 'Regenerate';
+        btn.disabled = false;
+    }
+</script>

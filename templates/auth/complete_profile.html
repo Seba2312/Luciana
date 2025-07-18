@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Complete your profile</title>
+
+    <script defer src="{{ url_for('static', filename='js/tailwind_config.js') }}"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+
+<body class="bg-background text-textPrimary flex items-center justify-center min-h-screen">
+
+<div class="w-full max-w-md bg-surface p-8 rounded-xl shadow">
+    <h1 class="text-2xl font-semibold text-center mb-2">Just one more step</h1>
+    <p class="text-center text-sm mb-4">Please watch the video before continuing.</p>
+    <div class="mb-4">
+        <iframe
+                class="w-full"
+                style="height: 40vh;"
+                src="https://www.youtube.com/embed/{{ video_id }}?autoplay=1"
+                title="Tutorial video"
+                allow="autoplay; encrypted-media"
+                allowfullscreen
+        ></iframe>
+    </div>
+
+    <p id="wait-msg" class="text-center text-sm mb-4">You can continue in <span id="timer">30</span>s.</p>
+
+    <div class="space-y-4">
+        <input
+                id="first-name"
+                type="text"
+                placeholder="First name"
+                class="w-full border border-neutral rounded-md px-3 py-2 bg-background text-textPrimary placeholder:text-textSecondary"
+        />
+
+        <input
+                id="last-name"
+                type="text"
+                placeholder="Last name"
+                class="w-full border border-neutral rounded-md px-3 py-2 bg-background text-textPrimary placeholder:text-textSecondary"
+        />
+
+        <div>
+            <input
+                    id="sqm"
+                    type="number"
+                    placeholder="Living area in m²"
+                    min="0"
+                    class="w-full border border-neutral rounded-md px-3 py-2 bg-background text-textPrimary placeholder:text-textSecondary"
+            />
+            <p class="text-sm text-textSecondary mt-1">
+                If you enter <strong>0 m²</strong>, you will be listed as a <strong>tenant</strong>.
+                Any higher number means you are a <strong>landlord</strong>.
+            </p>
+        </div>
+
+        <div id="role-preview" class="text-center text-primary font-medium text-lg hidden">
+            Role: <span id="role-text"></span>
+        </div>
+
+        <button
+                id="save-btn"
+                class="w-full bg-primary hover:bg-primaryHover text-surface py-3 rounded-md disabled:opacity-50"
+                disabled
+        >
+            Continue
+        </button>
+    </div>
+
+    <p id="error" class="text-sm text-danger text-center mt-4 hidden"></p>
+</div>
+
+<script type="module" defer src="{{ url_for('static', filename='js/auth/complete_profile.js') }}"></script>
+</body>
+</html>

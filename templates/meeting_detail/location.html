@@ -1,0 +1,101 @@
+{% if m.mode != 'online' %}
+<section id="location" class="bg-surface rounded shadow p-5 space-y-4">
+    <h2 class="text-xl font-semibold">Location</h2>
+
+    <form id="location-form" method="post" class="space-y-4">
+        <input type="hidden" name="form_name" value="update_location">
+
+        <label class="font-medium block">Search address</label>
+        <input id="search_address"
+               class="w-full border border-neutral rounded px-3 py-2 bg-background"
+               placeholder="Street, city…"/>
+
+        <div id="map"
+             class="w-full h-48 bg-neutralHover/20 rounded overflow-hidden flex items-center justify-center text-neutral">
+            Google Maps
+        </div>
+
+        <input type="hidden" name="formatted_address" id="formatted_address"
+               value="{{ m.formatted_address or '' }}">
+        <input type="hidden" name="latitude" id="latitude" value="{{ m.latitude  or '' }}">
+        <input type="hidden" name="longitude" id="longitude" value="{{ m.longitude or '' }}">
+
+        <div class="text-right">
+            <button
+                    class="px-4 py-2 bg-success hover:bg-successHover text-surface rounded">
+                Save location
+            </button>
+        </div>
+    </form>
+</section>
+
+
+<script>
+
+    /* --- Sehr wichtig, dass ist ein fehler bei ide, bei refractoring geht der code kaputt,
+    allgemein klappt der code, aber nicht refractoing machen, da sonst es mit der karte nicht mehr geht
+    technische erklärung: es ist ein jinja template und es läd direkt von html, ist eine html sache
+    kann man theoritisch lösen mit js, habe probiert und es ging nicht einfach, so geht ja auch, halt nicht so übersichtlich
+    aber nach 5 stunden es zum laufen zu bringen und kein unterschied im endprodukt, habe ich es sein lassen
+    --------*/
+
+    const INIT_LAT = {{ m.latitude  | float | default('null') }};
+    const INIT_LNG = {{ m.longitude | float | default('null') }};
+
+
+    function initMap() {
+        const map = new google.maps.Map(document.getElementById('map'), {
+            center: INIT_LAT !== null ? {lat: INIT_LAT, lng: INIT_LNG}
+                : {lat: 0, lng: 0},
+            zoom: INIT_LAT !== null ? 16 : 2
+        });
+
+        const input = document.getElementById('search_address');
+        const ac = new google.maps.places.Autocomplete(input, {
+            fields: ['address_components', 'formatted_address', 'geometry']
+        });
+
+        let marker = null;
+        const placeMarker = pos => {
+            if (!marker) {
+                marker = new google.maps.Marker({map, position: pos, draggable: true});
+                marker.addListener('dragend', () => {
+                    const p = marker.getPosition();
+                    document.getElementById('latitude').value = p.lat();
+                    document.getElementById('longitude').value = p.lng();
+                });
+            } else {
+                marker.setPosition(pos);
+            }
+            map.setCenter(pos);
+            map.setZoom(16);
+        };
+
+        if (INIT_LAT !== null) {
+            placeMarker({lat: INIT_LAT, lng: INIT_LNG});
+            document.getElementById('search_address').value =
+                {{m.formatted_address | tojson}};
+        }
+
+        ac.addListener('place_changed', () => {
+            const p = ac.getPlace();
+            if (!p.geometry) return;
+            placeMarker(p.geometry.location);
+            document.getElementById('formatted_address').value = p.formatted_address;
+            document.getElementById('latitude').value = p.geometry.location.lat();
+            document.getElementById('longitude').value = p.geometry.location.lng();
+        });
+
+        map.addListener('click', e => {
+            placeMarker(e.latLng);
+            document.getElementById('latitude').value = e.latLng.lat();
+            document.getElementById('longitude').value = e.latLng.lng();
+        });
+    }
+</script>
+
+<script async defer
+        src="https://maps.googleapis.com/maps/api/js?key={{ MAPS_API_KEY }}&libraries=places&callback=initMap">
+</script>
+
+{% endif %}

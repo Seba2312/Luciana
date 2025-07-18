@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Housing-Unit Meetings{% endblock %}</title>
+
+
+    <script defer src="{{ url_for('static', filename='js/tailwind_config.js') }}"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .dark input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(1) brightness(2);
+        }
+    </style>
+
+
+</head>
+
+<body class="bg-background text-textPrimary min-h-screen flex flex-col">
+
+{% set avatar_colours = [
+'red-500','orange-500','amber-500','yellow-500','lime-500',
+'green-500','emerald-500','teal-500','cyan-500','sky-500',
+'blue-500','indigo-500','violet-500','fuchsia-500','rose-500'
+] %}
+
+<nav class="bg-surface shadow">
+    <div class="max-w-6xl mx-auto px-4 flex justify-between items-center">
+
+        <div class="flex space-x-6">
+            {% if session.apartment_code %}
+            <a href="{{ url_for('home') }}"
+               class="py-5 font-semibold {% if request.path in ['/', '/home'] %}text-navActive{% else %}text-navDefault{% endif %}">
+                Home
+            </a>
+            <a href="{{ url_for('members_bp.members_page') }}"
+               class="py-5 hover:text-navHover {% if request.path.startswith('/members') %}text-navActive{% else %}text-navDefault{% endif %}">
+                Members
+            </a>
+            {% endif %}
+        </div>
+
+        {% if session.apartment_code %}
+        <span class="text-sm text-textSecondary">Apartment {{ session.apartment_code }}</span>
+        <a href="{{ url_for('dev_seed_demo') }}"
+           class="py-1.5 px-3 rounded bg-demo text-surface text-xs hover:bg-demoHover">
+            Load&nbsp;demo&nbsp;data
+        </a>
+        {% endif %}
+
+        <div class="flex items-center space-x-4">
+            {% if session.apartment_code %}
+            <a href="{{ url_for('profile_bp.settings_page') }}"
+               class="h-8 w-8 rounded-full flex items-center justify-center hover:opacity-90
+                {% if session.avatar in avatar_colours %}
+                  bg-{{ session.avatar }}
+                {% else %}
+                  bg-avatarFallback
+                {% endif %}">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     class="h-5 w-5 text-surface"
+                     fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round"
+                          d="M5.121 17.804A11.955 11.955 0 0112 15c2.761 0 5.26.89 7.379 2.404M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+            </a>
+            {% endif %}
+
+            <a href="{{ url_for('questionnaire_bp.questionnaire_page') }}"
+               class="py-1.5 px-4 rounded text-surface bg-primary hover:bg-primaryHover text-sm font-medium">
+                Questionnaire
+            </a>
+            <a href="{{ url_for('help_page', page=request.endpoint) }}"
+               class="py-1.5 px-4 rounded text-surface bg-info hover:bg-infoHover text-sm font-medium">
+                Help
+            </a>
+            <a href="{{ url_for('logout') }}"
+               class="py-1.5 px-4 rounded text-surface bg-logout hover:bg-logoutHover text-sm font-medium">
+                Logout
+            </a>
+        </div>
+    </div>
+</nav>
+
+<div id="toastBox" class="fixed top-4 right-4 z-50"></div>
+
+<main class="flex-grow">
+    {% block content %}{% endblock %}
+</main>
+
+<footer class="bg-surface text-center py-4 shadow-inner">
+    <p class="text-sm text-textSecondary">
+        © 2025 Luciana prototype —
+        <a href="{{ url_for('privacy_page') }}" class="underline hover:text-primary">Privacy</a>
+        &bull;
+        <a href="{{ url_for('terms_page') }}" class="underline hover:text-primary">Terms</a>
+    </p>
+</footer>
+
+<script defer src="{{ url_for('static', filename='js/tracker.js') }}"></script>
+</body>
+</html>

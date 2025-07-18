@@ -1,0 +1,42 @@
+<div class="bg-surface rounded shadow p-5">
+    <div class="flex items-center justify-between mb-3">
+        <p class="font-medium">Draft schedule</p>
+        <button id="aiBtn"
+                class="px-3 py-1 bg-primary hover:bg-primaryHover text-surface rounded"
+                onclick="generateSchedule()">Generate with AI
+        </button>
+    </div>
+
+    <textarea id="draftBox"
+              class="w-full border border-neutral rounded p-3 h-40 resize-y
+                   bg-background text-textPrimary"
+              placeholder="(will be filled by the AI suggestion later)">
+{{ m.ai_schedule }}</textarea>
+</div>
+
+<script>
+    let lastCall = 0;
+
+    async function generateSchedule() {
+        const now = Date.now();
+        if (now - lastCall < 5000) {
+            alert("Please wait a moment before trying again.");
+            return;
+        }
+        lastCall = now;
+
+        const btn = document.getElementById("aiBtn");
+        btn.textContent = "Working…";
+        btn.disabled = true;
+
+        const res = await fetch("/meeting/{{ m.id }}/api/generate_schedule",
+            {method: "POST"});
+        const data = await res.json();
+        document.getElementById("draftBox").value = data.schedule;
+
+        btn.textContent = "Regenerate";
+        setTimeout(() => {
+            btn.disabled = false;
+        }, 500);
+    }
+</script>

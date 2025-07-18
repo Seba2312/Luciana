@@ -1,0 +1,28 @@
+{# expects “m” in context #}
+{% set badge = {
+"online"  : "bg-online",
+"praesenz": "bg-presence",
+"hybrid"  : "bg-hybrid"
+}[m.mode] %}
+
+{% set can_delete = (me_uid == m.created_by) or (me.is_chair) %}
+<div class="flex items-center gap-3 justify-between">
+
+    <div class="flex items-center gap-3">
+    <span class="{{ badge }} text-surface px-3 py-1 rounded-full text-sm">
+      {{ m.mode|capitalize }}
+    </span>
+
+        <h1 class="text-2xl font-semibold">{{ m.title }}</h1>
+        <p class="text-textSecondary text-sm">{{ m.start_human }}</p>
+    </div>
+
+    {% if can_delete %}
+    <button id="delete-meeting"
+            class="bg-danger text-textPrimary hover:bg-dangerHover px-4 py-2 rounded transition"
+            title="Delete meeting">
+        Delete meeting
+    </button>
+
+    {% endif %}
+</div>

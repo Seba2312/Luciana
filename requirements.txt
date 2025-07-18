@@ -1,0 +1,6 @@
+Flask
+firebase-admin==6.5.0
+google-cloud-firestore
+google-auth
+python-dateutil
+gunicorn

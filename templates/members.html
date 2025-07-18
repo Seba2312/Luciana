@@ -1,0 +1,113 @@
+{# templates/members.html #}
+{% extends "base.html" %}
+{% block title %}Members{% endblock %}
+
+{% block content %}
+<section class="max-w-6xl mx-auto px-4 py-10">
+  <h1 class="text-2xl font-semibold mb-6">Members of the housing unit</h1>
+
+  <table class="w-full bg-surface rounded shadow">
+    <thead>
+      <tr class="bg-neutralHover text-left text-sm">
+        <th class="px-4 py-2">Name</th>
+        <th class="px-4 py-2">m²&nbsp;share</th>
+        <th class="px-4 py-2">Gifted&nbsp;(m²)</th>
+        <th class="px-4 py-2">Total voting&nbsp;m²</th>
+        <th class="px-4 py-2">Status</th>
+        <th class="px-4 py-2 text-center">Chair&nbsp;</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for m in members %}
+      <tr class="align-top text-sm">
+        <td class="border-t border-neutral px-4 py-2">{{ m.name }}</td>
+        <td class="border-t border-neutral px-4 py-2">{{ m.sqm }}</td>
+
+        <td class="border-t border-neutral px-4 py-2">
+          {% if m.received_sum > 0 %}
+          <button class="text-primary underline hover:opacity-80"
+                  onclick="toggleGift({{ loop.index0 }})">
+            {{ m.received_sum }}
+          </button>
+          {% else %}&ndash;{% endif %}
+        </td>
+
+        <td class="border-t border-neutral px-4 py-2">{{ m.total_votes }}</td>
+        <td class="border-t border-neutral px-4 py-2">{{ m.role }}</td>
+
+        <td class="border-t border-neutral px-4 py-2 text-center">
+          {% if m.is_chair %}
+          <span class="inline-block bg-warning text-background rounded-full px-2 py-0.5 text-xs">
+            Chair
+          </span>
+          {% elif current_is_chair %}
+          <button class="mr-1 text-primary hover:opacity-75"
+                  onclick="makeChair('{{ m.uid }}')">☆
+          </button>
+          <button class="text-danger hover:opacity-75"
+                  onclick="kickUser('{{ m.uid }}')">🗑
+          </button>
+          {% endif %}
+        </td>
+      </tr>
+
+      <tr id="gifts-{{ loop.index0 }}" class="hidden">
+        <td colspan="7" class="bg-background px-6 py-3 text-sm">
+          <strong>Gifted to {{ m.name }}:</strong>
+          {% if m.received_gifts %}
+          <ul class="list-disc list-inside mt-1">
+            {% for g in m.received_gifts %}
+            <li>{{ g.from }} → {{ g.sqm }} m²</li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          none
+          {% endif %}
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <div class="mt-8 flex flex-wrap gap-4">
+    <button class="bg-primary text-surface px-4 py-2 rounded hover:bg-primaryHover"
+            onclick="openGift()">Gift m²
+    </button>
+
+    <button class="border border-neutral bg-surface/20 px-4 py-2 rounded hover:bg-surface/40"
+            onclick="resetMine()">Reset all my gifts
+    </button>
+  </div>
+</section>
+
+<div id="giftDialog"
+     class="fixed inset-0 bg-black/40 flex items-center justify-center hidden">
+  <div class="bg-surface rounded-lg shadow p-6 w-full max-w-sm">
+    <h2 class="text-lg font-semibold mb-4">Gift m² to …</h2>
+
+    <label class="block mb-2 text-sm text-textSecondary">Recipient</label>
+    <select id="giftSelect" class="w-full border border-neutral rounded px-3 py-2 mb-4 bg-background">
+      {% for m in members if m.uid != current_uid %}
+      <option value="{{ m.uid }}">{{ m.name }}</option>
+      {% endfor %}
+    </select>
+
+    <label class="block mb-2 text-sm text-textSecondary">Amount&nbsp;(m²)</label>
+    <input id="giftAmount" type="number" min="1"
+           class="w-full border border-neutral rounded px-3 py-2 mb-6 bg-background"/>
+
+    <div class="flex justify-end gap-3">
+      <button onclick="closeGift()"
+              class="px-4 py-2 rounded border border-neutral bg-surface/20 hover:bg-surface/40">
+        Cancel
+      </button>
+      <button onclick="sendGift()"
+              class="px-4 py-2 rounded bg-primary text-surface hover:bg-primaryHover">
+        Send
+      </button>
+    </div>
+  </div>
+</div>
+
+<script defer src="{{ url_for('static', filename='js/members.js') }}"></script>
+{% endblock %}

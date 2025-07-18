@@ -1,0 +1,162 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="w-full px-4 py-10 flex flex-col items-center text-center">
+
+    {% if not joined %}
+    <h1 class="text-2xl font-semibold mb-8">
+        You do not belong to any apartment group yet
+    </h1>
+
+    <form method="post"
+          class="space-y-4 bg-surface p-6 rounded-xl shadow w-full max-w-sm">
+        <div>
+            <label class="block font-medium mb-1 text-textSecondary">
+                Apartment access&nbsp;code
+            </label>
+            <input name="code" maxlength="6" placeholder="ABC123"
+                   class="w-full border rounded px-3 py-2 tracking-widest text-center bg-background text-textPrimary"
+                   required>
+        </div>
+        <button
+            class="w-full bg-primary text-surface py-2 rounded hover:bg-primaryHover">
+            Join apartment
+        </button>
+    </form>
+
+    <div class="my-6 text-textSecondary text-sm">— or —</div>
+
+    <form method="post" class="w-full max-w-sm">
+        <input type="hidden" name="create_entity" value="1">
+        <button
+            class="w-full border border-primary text-primary py-2 rounded hover:bg-surface hover:bg-opacity-40">
+            Create new apartment
+        </button>
+    </form>
+
+    {% else %}
+    {% set mode_color = {
+        'online':'bg-online',
+        'praesenz':'bg-presence',
+        'hybrid':'bg-hybrid'
+    } %}
+    {% set C = session.customization %}
+
+    {% if current %}
+    <h2 class="text-xl font-semibold mb-4">Current meeting</h2>
+
+    <a href="{{ url_for('meet_bp.meeting_page', mid=current.id) }}"
+       class="w-full max-w-xl bg-background border-2 border-primary rounded-xl shadow hover:shadow-lg transition p-6 mb-12">
+        <span class="{{ mode_color[current.mode] }} text-surface px-2 py-1 rounded-full text-xs">
+            {{ current.mode|capitalize }}
+        </span>
+
+        <h3 class="text-2xl font-semibold mt-3 text-textPrimary">{{ current.title }}</h3>
+        {% if C.showWhen %}
+        <p class="text-textSecondary text-sm">{{ current.date_human }}</p>
+        {% endif %}
+        {% if C.showWhere %}
+        <p class="text-textSecondary text-xs">{{ current.formatted_address or '—' }}</p>
+        {% endif %}
+        {% if C.showParticipation %}
+        <p class="text-textSecondary text-xs">
+            {% if session.uid in current.attending_live or session.uid in current.attending_online %}
+            Participating
+            {% else %}
+            Not participating
+            {% endif %}
+        </p>
+        {% endif %}
+        {% if C.showTopics %}
+        <p class="text-textSecondary text-xs">{{ current.topic_count }} topics</p>
+        {% endif %}
+        {% if C.showVotingRight %}
+        <p class="text-textSecondary text-xs">{{ user.total_votes or 0 }} votes</p>
+        {% endif %}
+    </a>
+    {% endif %}
+
+    <h2 class="text-xl font-semibold mb-4">Meetings</h2>
+
+    <a id="add-meeting-btn" href="{{ url_for('meet_bp.meeting_new_page') }}"
+       class="mb-8 bg-primary text-surface px-4 py-2 rounded hover:bg-primaryHover">
+        Add meeting
+    </a>
+
+    <div class="w-full max-w-6xl grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4 mb-10">
+        {% for m in upcoming %}
+        <a href="{{ url_for('meet_bp.meeting_page', mid=m.id) }}"
+           class="bg-surface rounded shadow hover:shadow-lg transition p-5 w-full min-w-[250px]">
+            <span class="{{ mode_color[m.mode] }} text-surface px-2 py-1 rounded-full text-xs">
+                {{ m.mode|capitalize }}
+            </span>
+            <h3 class="text-lg font-medium mt-3 text-textPrimary">{{ m.title }}</h3>
+            {% if C.showWhen %}
+            <p class="text-textSecondary text-sm">{{ m.date_human }}</p>
+            {% endif %}
+            {% if C.showWhere %}
+            <p class="text-textSecondary text-xs">{{ m.formatted_address or '—' }}</p>
+            {% endif %}
+            {% if C.showParticipation %}
+            <p class="text-textSecondary text-xs">
+                {% if session.uid in m.attending_live or session.uid in m.attending_online %}
+                Participating
+                {% else %}
+                Not participating
+                {% endif %}
+            </p>
+            {% endif %}
+            {% if C.showTopics %}
+            <p class="text-textSecondary text-xs">{{ m.topic_count }} topics</p>
+            {% endif %}
+            {% if C.showVotingRight %}
+            <p class="text-textSecondary text-xs">{{ user.total_votes or 0 }} votes</p>
+            {% endif %}
+        </a>
+        {% endfor %}
+    </div>
+
+    <details class="w-full max-w-6xl bg-surface rounded shadow">
+        <summary class="cursor-pointer px-5 py-3 font-medium select-none text-textPrimary">
+            Past meetings
+        </summary>
+        <div class="p-5 grid gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
+            {% for m in past %}
+            <a href="{{ url_for('past_meet_bp.meeting_past_page', mid=m.id) }}"
+               class="bg-background rounded shadow hover:shadow-lg transition p-5 w-full min-w-[250px]">
+                <span class="{{ mode_color[m.mode] }} text-surface px-2 py-1 rounded-full text-xs">
+                    {{ m.mode|capitalize }}
+                </span>
+                <h3 class="text-lg font-medium mt-3 text-textPrimary">{{ m.title }}</h3>
+                {% if C.showWhen %}
+                <p class="text-textSecondary text-sm">{{ m.date_human }}</p>
+                {% endif %}
+                {% if C.showWhere %}
+                <p class="text-textSecondary text-xs">{{ m.formatted_address or '—' }}</p>
+                {% endif %}
+                {% if C.showParticipation %}
+                <p class="text-textSecondary text-xs">
+                    {% if session.uid in m.attending_live or session.uid in m.attending_online %}
+                    Participating
+                    {% else %}
+                    Not participating
+                    {% endif %}
+                </p>
+                {% endif %}
+                {% if C.showTopics %}
+                <p class="text-textSecondary text-xs">{{ m.topic_count }} topics</p>
+                {% endif %}
+                {% if C.showVotingRight %}
+                <p class="text-textSecondary text-xs">{{ user.total_votes or 0 }} votes</p>
+                {% endif %}
+            </a>
+            {% endfor %}
+        </div>
+    </details>
+
+    {% endif %}
+
+</section>
+<script defer src="{{ url_for('static', filename='js/home_metrics.js') }}"></script>
+{% endblock %}
